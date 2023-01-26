@@ -1,0 +1,74 @@
+---------------------------------
+Snippet for Daylight Savings Time
+Not needed anymore because since there/will be are buttons on the projects, the time can be set easily with those
+---------------------------------
+
+bool checkDSL(RtcDateTime adesso){
+
+  int gds = adesso.DayOfWeek(); // 0 sunday, 6 saturday
+  int giorno = adesso.Day();
+  int mese = adesso.Month();
+
+  if(mese < 3 || mese > 10){
+    Console.println("wintermaanden");
+    return false;
+  }
+  Console.println("NIET wintermaanden");
+  if(mese > 3 && mese < 10){
+    Console.println("zomermaanden");
+    return true;
+  }
+  Console.println("NIET wintermaanden");
+  Console.println("dus maart of oktober");
+  // qui mese == 3 o 10
+  int dayOfChange = 0;
+  for(int i = giorno; i < 32; i++){
+    if(gds % 7 == 0){
+      dayOfChange = i;
+    }
+    gds++;
+  }
+  Console.print("day of change deze maand: ");
+  Console.println(dayOfChange);
+
+  if((mese == 3 && giorno >= dayOfChange) || (mese == 10 && giorno < dayOfChange)){
+    Console.println("siamo a marzo E il giorno é il o dopo il giorno di cambio, oppure ad ottobre e prima del giorno di cambio");
+    return true;
+  }
+  Console.println("arrivato qui perché il if qui sopra non é true gheghe");
+  return false;
+}
+
+bool oraExtra = checkDSL(adesso);
+  if(oraExtra){
+    ora++;
+    if(ora > 23){
+      ora = 0;
+    }
+  }
+
+
+------------------
+Top part with all variable declarations
+------------------
+
+#ifndef USE_SOFTWARESERIAL
+#define USE_SOFTWARESERIAL 0   ///< Set to 1 to use SoftwareSerial library, 0 for native serial port
+#endif
+#define USE_CHECKSUM 0
+#include <MD_YX5300.h>
+#include <MD_cmdProcessor.h>
+
+#if USE_SOFTWARESERIAL
+#include <SoftwareSerial.h>
+
+// Connections for serial interface to the YX5300 module
+const uint8_t ARDUINO_RX = 23;    // connect to TX of MP3 Player module
+const uint8_t ARDUINO_TX = 22;    // connect to RX of MP3 Player module
+
+SoftwareSerial  MP3Stream(ARDUINO_RX, ARDUINO_TX);  // MP3 player serial stream for comms
+#define Console Serial           // command processor input/output stream
+#else
+#define MP3Stream Serial2  // Native serial port - change to suit the application
+#define Console   Serial   // command processor input/output stream
+#endif
